@@ -1,0 +1,596 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+* { box-sizing: border-box; }
+
+.birthday-page {
+  --sage: #84977e;
+  --sage-dark: #536b57;
+  --sage-light: #b9c5ad;
+  --cream: #f5f0e5;
+  --cream-light: #fffdf6;
+  --cream-dark: #e7e1d1;
+
+  font-family: Georgia, "Times New Roman", serif;
+  background: var(--cream);
+  color: var(--sage-dark);
+  padding: 18px 10px;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.card {
+  position: relative;
+  max-width: 1000px;
+  min-height: 520px;
+  margin: auto;
+  background: var(--cream-light);
+  border: 3px solid var(--sage-light);
+  border-radius: 22px;
+  box-shadow: 0 10px 28px #536b571c;
+  overflow: hidden;
+}
+
+/* Bingkai bagian dalam */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px solid #c5cfba;
+  border-radius: 14px;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Ornamen daun */
+.leaves {
+  position: absolute;
+  width: 155px;
+  height: 145px;
+  opacity: .72;
+  pointer-events: none;
+  z-index: 1;
+}
+.leaves.top-left { top: 0; left: 0; }
+.leaves.bottom-right {
+  right: 0; bottom: 0;
+  transform: rotate(180deg);
+}
+.leaves.bottom-left {
+  bottom: 0; left: 0;
+  transform: rotate(90deg);
+  opacity: .4;
+}
+.leaves.top-right {
+  top: 0; right: 0;
+  transform: rotate(-90deg);
+  opacity: .4;
+}
+
+.page {
+  position: relative;
+  z-index: 2;
+  min-height: 520px;
+  padding: 48px 34px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Sprinkle jatuh */
+.sprinkles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.sprinkle {
+  position: absolute;
+  top: -25px;
+  left: var(--left);
+  width: var(--size);
+  height: calc(var(--size) * 1.65);
+  background: var(--color);
+  border-radius: 2px;
+  opacity: .8;
+  animation: fall var(--duration) linear var(--delay) infinite;
+}
+
+.sprinkle.dot {
+  border-radius: 50%;
+  width: calc(var(--size) * .8);
+  height: calc(var(--size) * .8);
+}
+
+.sprinkle.diamond {
+  border-radius: 1px;
+  transform: rotate(45deg);
+}
+
+@keyframes fall {
+  0% {
+    transform: translate3d(0, -30px, 0) rotate(0deg);
+    opacity: 0;
+  }
+  10% { opacity: .8; }
+  50% {
+    transform: translate3d(var(--drift), 270px, 0) rotate(180deg);
+  }
+  90% { opacity: .75; }
+  100% {
+    transform: translate3d(calc(var(--drift) * -0.5), 570px, 0)
+               rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Sampul awal */
+.cover {
+  cursor: pointer;
+  user-select: none;
+}
+
+.cover-content {
+  max-width: 500px;
+  padding: 38px 28px;
+  position: relative;
+  z-index: 5;
+}
+
+.eyebrow {
+  font-family: Arial, sans-serif;
+  font-size: 11px;
+  letter-spacing: 4px;
+  line-height: 1.8;
+  color: var(--sage);
+  text-transform: uppercase;
+}
+
+.cover h1 {
+  font-weight: normal;
+  font-size: clamp(32px, 6vw, 54px);
+  color: var(--sage-dark);
+  line-height: 1.2;
+  margin: 24px 0 12px;
+}
+
+.cover p {
+  color: var(--sage);
+  font-size: 15px;
+  font-style: italic;
+}
+
+.open-label {
+  display: inline-block;
+  margin-top: 26px;
+  padding: 15px 27px;
+  border-radius: 5px;
+  background: var(--sage);
+  color: var(--cream-light);
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  letter-spacing: 1px;
+  box-shadow: 0 5px 14px #536b5725;
+  transition: transform .25s, background .25s;
+}
+
+.cover:hover .open-label {
+  transform: translateY(-3px);
+  background: var(--sage-dark);
+}
+
+.heart {
+  color: var(--sage);
+  font-size: 25px;
+  margin-top: 14px;
+}
+
+/* Halaman isi */
+.inside { display: none; }
+
+.inside.show {
+  display: flex;
+  animation: appear 1.1s ease both;
+}
+
+@keyframes appear {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.inside h2 {
+  font-weight: normal;
+  font-size: clamp(28px, 5vw, 43px);
+  color: var(--sage-dark);
+  margin: 17px 0 12px;
+  line-height: 1.2;
+}
+
+.divider {
+  width: 100%;
+  max-width: 300px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin: 8px auto 20px;
+}
+
+.divider span {
+  height: 1px;
+  background: var(--sage);
+  flex: 1;
+}
+
+.divider b {
+  font-size: 24px;
+  font-weight: normal;
+  color: var(--sage);
+}
+
+.message {
+  width: 100%;
+  max-width: 670px;
+  margin: 0 auto;
+  font-size: clamp(14px, 1.8vw, 17px);
+  line-height: 1.8;
+  color: #536b57;
+}
+
+/* Kue ulang tahun putih */
+.cake {
+  display: block;
+  width: 190px;
+  max-width: 52%;
+  height: auto;
+  margin: 14px auto 3px;
+  overflow: visible;
+}
+
+.flame {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  animation: flicker .65s ease-in-out infinite alternate;
+}
+
+.flame:nth-child(even) {
+  animation-delay: .25s;
+}
+
+@keyframes flicker {
+  from { transform: scale(.88) rotate(-4deg); }
+  to { transform: scale(1.08) rotate(4deg); }
+}
+
+.signature {
+  margin-top: 12px;
+  padding: 11px 26px;
+  background: var(--sage);
+  color: var(--cream-light);
+  font-size: 16px;
+  font-style: normal;
+  clip-path: polygon(
+    0 0, 100% 0, 96% 50%, 100% 100%,
+    0 100%, 4% 50%
+  );
+}
+
+.footnote {
+  margin-top: 14px;
+  font-family: Arial, sans-serif;
+  color: var(--sage);
+  font-size: 10px;
+  letter-spacing: 3px;
+}
+
+@media (max-width: 600px) {
+  .birthday-page { padding: 4px; }
+  .card, .page { min-height: 550px; }
+  .page { padding: 38px 24px; }
+  .leaves { width: 95px; height: 95px; }
+  .message { line-height: 1.7; }
+  .inside h2 { margin-top: 20px; }
+}
+</style>
+</head>
+
+<body style="margin:0">
+
+<div class="birthday-page">
+  <div class="card" id="birthdayCard">
+
+    <!-- Ornamen daun sage -->
+    <svg class="leaves top-left" viewBox="0 0 160 145"
+         aria-hidden="true">
+      <g fill="#84977e">
+        <path d="M0 12 Q55 28 120 100 Q70 53 0 12Z"/>
+        <path d="M20 24 Q10 0 34 0 Q45 12 20 24Z"/>
+        <path d="M39 39 Q28 8 53 12 Q64 26 39 39Z"/>
+        <path d="M58 55 Q51 27 75 30 Q83 43 58 55Z"/>
+        <path d="M78 72 Q75 46 97 49 Q104 61 78 72Z"/>
+        <path d="M98 90 Q98 66 118 71 Q124 82 98 90Z"/>
+        <path d="M22 26 Q3 39 5 55 Q23 54 22 26Z"/>
+        <path d="M44 43 Q23 59 31 74 Q48 69 44 43Z"/>
+        <path d="M66 61 Q46 78 56 92 Q72 86 66 61Z"/>
+      </g>
+      <path d="M0 12 Q55 28 120 100" fill="none"
+            stroke="#536b57" stroke-width="1.5"/>
+    </svg>
+
+    <svg class="leaves bottom-right" viewBox="0 0 160 145"
+         aria-hidden="true">
+      <g fill="#84977e">
+        <path d="M0 12 Q55 28 120 100 Q70 53 0 12Z"/>
+        <path d="M20 24 Q10 0 34 0 Q45 12 20 24Z"/>
+        <path d="M39 39 Q28 8 53 12 Q64 26 39 39Z"/>
+        <path d="M58 55 Q51 27 75 30 Q83 43 58 55Z"/>
+        <path d="M78 72 Q75 46 97 49 Q104 61 78 72Z"/>
+        <path d="M22 26 Q3 39 5 55 Q23 54 22 26Z"/>
+        <path d="M44 43 Q23 59 31 74 Q48 69 44 43Z"/>
+        <path d="M66 61 Q46 78 56 92 Q72 86 66 61Z"/>
+      </g>
+      <path d="M0 12 Q55 28 120 100" fill="none"
+            stroke="#536b57" stroke-width="1.5"/>
+    </svg>
+
+    <!-- Sprinkle animasi dibuat melalui JavaScript -->
+    <div class="sprinkles" id="sprinkles" aria-hidden="true"></div>
+
+    <!-- HALAMAN PEMBUKA -->
+    <section class="page cover" id="cover" role="button"
+             tabindex="0" aria-label="Buka kartu ulang tahun">
+
+      <div class="cover-content">
+        <div class="eyebrow">A little birthday surprise</div>
+        <h1>Klik disini ya<br>Zazaa ♡</h1>
+        <p>A little wish, made just for you.</p>
+        <div class="open-label">Buka kartu ♡</div>
+        <div class="heart">♡</div>
+      </div>
+    </section>
+
+    <!-- HALAMAN UCAPAN -->
+    <section class="page inside" id="inside">
+      <div class="eyebrow">
+        A special day for someone special
+      </div>
+
+      <h2>Happy Birthday, Zazaa!</h2>
+
+      <div class="divider">
+        <span></span><b>♥</b><span></span>
+      </div>
+
+      <p class="message">
+        Zazaa selamat ulangtahun, semoga segala sesuatu yang sedang
+        kamu capai saat ini bisa berjalan dengan lancar dan selalu
+        mendapatkan dukungan positif dari orang-orang di sekitar kamu.
+        Semoga selalu diberikan kelancaran dan keberkahan hidup di dunia
+        ini, selalu menikmati setiap detik kehidupan yang sedang kamu
+        jalankan dan selalu diberikan keberkahan dalam menikmati rasa
+        syukur yang sudah Allah berikan yaa, aamiin.
+      </p>
+
+      <!-- Kue putih dengan tepat lima lilin -->
+      <svg class="cake" viewBox="0 0 240 170"
+           xmlns="http://www.w3.org/2000/svg"
+           role="img" aria-label="Kue putih dengan lima lilin menyala">
+
+        <!-- Sprinkle kecil dekoratif -->
+        <g fill="#84977e">
+          <circle cx="29" cy="48" r="2"/>
+          <circle cx="209" cy="52" r="2"/>
+          <path d="M34 68 l4 4 -4 4 -4 -4z"/>
+          <path d="M204 33 l4 4 -4 4 -4 -4z"/>
+        </g>
+
+        <!-- Api: lima lilin -->
+        <g class="flame" fill="#84977e">
+          <path d="M65 40 Q53 27 65 14 Q77 27 65 40Z"/>
+          <path d="M92 33 Q80 20 92 7 Q104 20 92 33Z"/>
+          <path d="M120 29 Q108 16 120 3 Q132 16 120 29Z"/>
+          <path d="M148 33 Q136 20 148 7 Q160 20 148 33Z"/>
+          <path d="M175 40 Q163 27 175 14 Q187 27 175 40Z"/>
+        </g>
+        <g fill="#fffdf6">
+          <ellipse cx="65" cy="29" rx="3" ry="6"/>
+          <ellipse cx="92" cy="22" rx="3" ry="6"/>
+          <ellipse cx="120" cy="18" rx="3" ry="6"/>
+          <ellipse cx="148" cy="22" rx="3" ry="6"/>
+          <ellipse cx="175" cy="29" rx="3" ry="6"/>
+        </g>
+
+        <!-- Sumbu -->
+        <g stroke="#536b57" stroke-width="1.5">
+          <path d="M65 40 V51 M92 33 V51 M120 29 V51
+                   M148 33 V51 M175 40 V51"/>
+        </g>
+
+        <!-- Lilin sage dan cream -->
+        <g stroke="#b9c5ad" stroke-width="7" stroke-linecap="round">
+          <path d="M65 49 V69 M92 49 V69 M120 49 V69
+                   M148 49 V69 M175 49 V69"/>
+        </g>
+        <g stroke="#fffdf6" stroke-width="2" stroke-linecap="round">
+          <path d="M65 49 V69 M92 49 V69 M120 49 V69
+                   M148 49 V69 M175 49 V69"/>
+        </g>
+
+        <!-- Krim atas -->
+        <path d="M42 79 Q55 67 69 78 Q83 67 97 78
+                 Q111 67 125 78 Q139 67 153 78
+                 Q167 67 181 78 L192 94 L48 94Z"
+              fill="#fffdf6" stroke="#dce2d2" stroke-width="1.5"/>
+
+        <!-- Badan kue putih -->
+        <rect x="45" y="90" width="150" height="35" rx="5"
+              fill="#fffdf6" stroke="#dce2d2" stroke-width="1.5"/>
+
+        <!-- Garis krim sage -->
+        <path d="M46 99 Q61 110 76 99 T106 99
+                 T136 99 T166 99 T194 99"
+              fill="none" stroke="#b9c5ad" stroke-width="4"/>
+
+        <!-- Lapisan bawah -->
+        <rect x="56" y="122" width="128" height="22" rx="5"
+              fill="#fffdf6" stroke="#dce2d2" stroke-width="1.5"/>
+
+        <!-- Alas kue -->
+        <ellipse cx="120" cy="146" rx="87" ry="11"
+                 fill="#b9c5ad"/>
+        <ellipse cx="120" cy="142" rx="87" ry="10"
+                 fill="#f5f0e5" stroke="#84977e" stroke-width="1.5"/>
+      </svg>
+
+      <div class="signature">Dari Jelly untuk Zazaaa</div>
+      <div class="footnote">WITH LOVE & PRAYERS · ♡</div>
+    </section>
+  </div>
+</div>
+
+<script>
+(function () {
+  const cover = document.getElementById('cover');
+  const inside = document.getElementById('inside');
+  const sprinkleBox = document.getElementById('sprinkles');
+
+  let opened = false;
+  let audioContext = null;
+  let masterGain = null;
+  let musicTimer = null;
+
+  // Membuat sprinkle sage dan cream yang berjatuhan.
+  const sprinkleColors = [
+    '#84977e', '#b9c5ad', '#dce2d2',
+    '#a6b49c', '#f5f0e5'
+  ];
+
+  for (let i = 0; i < 34; i++) {
+    const piece = document.createElement('span');
+    const shape = i % 3;
+
+    piece.className = 'sprinkle' +
+      (shape === 1 ? ' dot' : shape === 2 ? ' diamond' : '');
+
+    piece.style.setProperty('--left', (Math.random() * 100) + '%');
+    piece.style.setProperty('--size', (4 + Math.random() * 5) + 'px');
+    piece.style.setProperty('--color',
+      sprinkleColors[i % sprinkleColors.length]);
+    piece.style.setProperty('--duration',
+      (5 + Math.random() * 7) + 's');
+    piece.style.setProperty('--delay',
+      (-Math.random() * 12) + 's');
+    piece.style.setProperty('--drift',
+      ((Math.random() - 0.5) * 100) + 'px');
+
+    sprinkleBox.appendChild(piece);
+  }
+
+  // Melodi Happy Birthday sintetis tanpa file audio eksternal.
+  function playMusic() {
+    const AudioCtx = window.AudioContext ||
+                     window.webkitAudioContext;
+
+    if (!AudioCtx) return;
+
+    try {
+      audioContext = new AudioCtx();
+      masterGain = audioContext.createGain();
+      masterGain.gain.value = 0.035;
+      masterGain.connect(audioContext.destination);
+
+      const melody = [
+        [392,1],[392,1],[440,2],[392,2],[523,2],[494,4],
+        [392,1],[392,1],[440,2],[392,2],[587,2],[523,4],
+        [392,1],[392,1],[784,2],[659,2],[523,2],[494,2],[440,4],
+        [698,1],[698,1],[659,2],[523,2],[587,2],[523,4]
+      ];
+
+      const beat = 0.40;
+
+      function playNote(frequency, start, duration) {
+        const oscillator = audioContext.createOscillator();
+        const envelope = audioContext.createGain();
+
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(frequency, start);
+
+        envelope.gain.setValueAtTime(0.001, start);
+        envelope.gain.linearRampToValueAtTime(0.65, start + 0.04);
+        envelope.gain.setValueAtTime(
+          0.65, start + duration * 0.65
+        );
+        envelope.gain.exponentialRampToValueAtTime(
+          0.001, start + duration
+        );
+
+        oscillator.connect(envelope);
+        envelope.connect(masterGain);
+
+        oscillator.start(start);
+        oscillator.stop(start + duration + 0.03);
+      }
+
+      function playPhrase() {
+        if (!opened || !audioContext) return;
+
+        const now = audioContext.currentTime;
+        let t = now + 0.1;
+
+        melody.forEach(function (item) {
+          const frequency = item[0];
+          const duration = item[1] * beat;
+
+          playNote(frequency, t, duration * 0.88);
+          t += duration;
+        });
+
+        const wait = Math.max(100,
+          (t - audioContext.currentTime + 1.2) * 1000);
+
+        musicTimer = setTimeout(playPhrase, wait);
+      }
+
+      audioContext.resume().then(function () {
+        if (opened) playPhrase();
+      }).catch(function () {
+        // Kartu tetap berfungsi bila audio diblokir.
+      });
+
+    } catch (error) {
+      // Tidak mengganggu tampilan kartu.
+    }
+  }
+
+  function openCard() {
+    if (opened) return;
+
+    opened = true;
+    cover.style.display = 'none';
+    inside.classList.add('show');
+
+    // Musik mulai karena pengguna mengeklik kartu.
+    playMusic();
+  }
+
+  cover.addEventListener('click', openCard);
+
+  cover.addEventListener('keydown', function (event) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      openCard();
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
